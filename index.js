@@ -5,10 +5,11 @@ require("dotenv").config();
 const db = mysql.createConnection(
   {
     host: "localhost",
-    port: 3001,
+    port: 3306,
     user: "root",
     password: process.env.DB_PASSWORD,
     database: "employee_db",
+    loop: false,
   },
   console.log(`Connected to the movies_db database.`)
 );
@@ -54,8 +55,13 @@ function start() {
       }
     });
 }
+
 function viewAllEmployees() {
-  const sql = "SELECT * FROM employees";
+  const sql = `SELECT E.id AS id, E.first_name AS first_name, E.last_name AS last_name, 
+    R.title AS role, D.name AS department, CONCAT(M.first_name, " ", M.last_name) AS manager
+    FROM EMPLOYEE AS E LEFT JOIN ROLE AS R ON E.role_id = R.id
+    LEFT JOIN DEPARTMENT AS D ON R.department_id = D.id
+    LEFT JOIN EMPLOYEE AS M ON E.manager_id = M.id;`;
   db.query(sql, (err, result) => {
     if (err) throw err;
     console.table(result);
@@ -71,16 +77,18 @@ function viewAllDepartments() {
   start();
 }
 function viewAllRoles() {
-  const sql = "SELECT * FROM role";
+  const sql = `SELECT R.id AS id, title, salary, D.name AS department
+    FROM ROLE AS R LEFT JOIN DEPARTMENT AS D
+    ON R.department_id = D.id;`;
   db.query(sql, (err, result) => {
     if (err) throw err;
     console.table(result);
   });
   start();
 }
-function addEmployee() {}
-function addDepartment() {}
-function addRole() {}
-function updateEmployeeRole(role) {}
+// function addEmployee() {}
+// function addDepartment() {}
+// function addRole() {}
+// function updateEmployeeRole(role) {}
 
 start();
