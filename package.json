@@ -8,6 +8,8 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "console.table": "^0.10.0",
+    "ctable": "^0.0.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "inquirer": "^8.2.4",
