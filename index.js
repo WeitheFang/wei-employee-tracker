@@ -1,8 +1,11 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
 const cTable = require("console.table");
+const figlet = require("figlet");
 
 require("dotenv").config();
+
+console.log(figlet.textSync("EMPLOYEE TRACKER"));
 
 const db = mysql.createConnection(
   {
@@ -11,7 +14,6 @@ const db = mysql.createConnection(
     user: "root",
     password: process.env.DB_PASSWORD,
     database: "employee_db",
-    loop: false,
   },
   console.log(`Connected to the employee_db database.`)
 );
@@ -30,6 +32,9 @@ function start() {
         "Add department",
         "Add role",
         "Update employee role",
+        "Delete Department",
+        "Delete Role",
+        "Delete Employee",
         "Exit",
       ],
     })
@@ -51,6 +56,12 @@ function start() {
         addRole();
       } else if (answer.selection === "Update employee role") {
         updateEmployeeRole();
+      } else if (answer.selection === "Delete Department") {
+        deleteDepartment();
+      } else if (answer.selection === "Delete Role") {
+        deleteRole();
+      } else if (answer.selection === "Delete Employee") {
+        deleteEmployee();
       } else {
         console.log("Goodbye!");
         db.end();
@@ -65,6 +76,7 @@ const viewAllEmployees = () => {
     LEFT JOIN EMPLOYEE AS M ON E.manager_id = M.id;`;
   db.query(sql, (err, result) => {
     if (err) throw err;
+    console.log("");
     console.table(result);
   });
   start();
@@ -74,6 +86,7 @@ const viewAllDepartments = () => {
   const sql = "SELECT * FROM department";
   db.query(sql, (err, result) => {
     if (err) throw err;
+    console.log("");
     console.table(result);
   });
   start();
@@ -85,6 +98,7 @@ const viewAllRoles = () => {
     ON R.department_id = D.id;`;
   db.query(sql, (err, result) => {
     if (err) throw err;
+    console.log("");
     console.table(result);
   });
   start();
@@ -102,6 +116,7 @@ const addDepartment = () => {
       db.query(sql, answer.add_department, (err, res) => {
         if (err) throw err;
         console.log("Department added!");
+        viewAllDepartments();
       });
       start();
     });
@@ -134,11 +149,13 @@ const addRole = () => {
         (err, res) => {
           if (err) throw err;
           console.log("Role added!");
+          viewAllRoles();
         }
       );
       start();
     });
 };
+
 const addEmployee = () => {
   inquirer
     .prompt([
@@ -178,6 +195,7 @@ const addEmployee = () => {
         (err, res) => {
           if (err) throw err;
           console.log("Employee added!");
+          viewAllEmployees();
         }
       );
       start();
@@ -207,10 +225,62 @@ const updateEmployeeRole = () => {
         (err, res) => {
           if (err) throw err;
           console.log("Employee role updated!");
-          start();
+          viewAllEmployees();
         }
-      ).catch((err) => {
-        console.log(err);
+      );
+      start();
+    });
+};
+
+const deleteEmployee = () => {
+  inquirer
+    .prompt({
+      name: "delete_employee",
+      type: "input",
+      message: "What is the id of the employee you would like to delete?",
+    })
+    .then((answer) => {
+      const sql = `DELETE FROM employee WHERE id = ?`;
+      db.query(sql, answer.delete_employee, (err, res) => {
+        if (err) throw err;
+        console.log("Employee deleted!");
+        viewAllEmployees();
+      });
+      start();
+    });
+};
+
+const deleteRole = () => {
+  inquirer
+    .prompt({
+      name: "delete_role",
+      type: "input",
+      message: "What is the id of the role you would like to delete?",
+    })
+    .then((answer) => {
+      const sql = `DELETE FROM role WHERE id = ?`;
+      db.query(sql, answer.delete_role, (err, res) => {
+        if (err) throw err;
+        console.log("Role deleted!");
+        viewAllRoles();
+      });
+      start();
+    });
+};
+
+const deleteDepartment = () => {
+  inquirer
+    .prompt({
+      name: "delete_department",
+      type: "input",
+      message: "What is the id of the department you would like to delete?",
+    })
+    .then((answer) => {
+      const sql = `DELETE FROM department WHERE id = ?`;
+      db.query(sql, answer.delete_department, (err, res) => {
+        if (err) throw err;
+        console.log("Department deleted!");
+        viewAllDepartments();
       });
       start();
     });

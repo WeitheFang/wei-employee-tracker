@@ -15,7 +15,7 @@ VALUES ("Human Resources Manager", 60000, 1),
        ("Support Manager", 60000, 4),
        ("Support Associate", 40000, 4),
        ("Development Manager", 150000, 5),
-       ("Development Associate", 500000, 5);
+       ("Development Associate", 50000, 5);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("Elliot", "Smith", 1,NULL),
