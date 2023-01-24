@@ -14,7 +14,6 @@ const db = mysql.createConnection(
     user: "root",
     password: process.env.DB_PASSWORD,
     database: "employee_db",
-    loop: false,
   },
   console.log(`Connected to the employee_db database.`)
 );
@@ -77,6 +76,7 @@ const viewAllEmployees = () => {
     LEFT JOIN EMPLOYEE AS M ON E.manager_id = M.id;`;
   db.query(sql, (err, result) => {
     if (err) throw err;
+    console.log("");
     console.table(result);
   });
   start();
@@ -86,6 +86,7 @@ const viewAllDepartments = () => {
   const sql = "SELECT * FROM department";
   db.query(sql, (err, result) => {
     if (err) throw err;
+    console.log("");
     console.table(result);
   });
   start();
@@ -97,6 +98,7 @@ const viewAllRoles = () => {
     ON R.department_id = D.id;`;
   db.query(sql, (err, result) => {
     if (err) throw err;
+    console.log("");
     console.table(result);
   });
   start();
@@ -153,6 +155,7 @@ const addRole = () => {
       start();
     });
 };
+
 const addEmployee = () => {
   inquirer
     .prompt([
